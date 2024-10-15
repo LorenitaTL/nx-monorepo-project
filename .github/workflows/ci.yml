@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         app: [app1, app2] # Lista de apps que se pueden construir/desplegar. Puedes agregar más.
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +38,7 @@ jobs:
       # Build only the current app from the matrix
       - name: Build App
         run: |
-          npx nx run ${matrix.app}:build
+          npx nx run ${{matrix.app}}:build
         env:
           NX_CLOUD_DISTRIBUTED_EXECUTION: true
 
