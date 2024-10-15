@@ -13,7 +13,7 @@ export default function Index() {
           <div id="welcome">
             <h1>
               <span> Hello there, </span>
-              Welcome nx-monorepo-project 👋
+              Welcome Main App 👋
             </h1>
           </div>
 
