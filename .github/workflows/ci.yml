@@ -47,6 +47,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y awscli
 
+      - name: list files
+        run: |
+          cd ./${{ matrix.app }}
+          ls -la
+
       # Upload the built app to the corresponding S3 bucket
       - name: Deploy app to S3
         run: |
