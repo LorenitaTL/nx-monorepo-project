@@ -44,7 +44,7 @@ jobs:
           sudo apt-get install -y awscli
 
       # Upload app1 to S3 bucket
-      - name: Deploy app1 to S3
+      - name: Deploy nx-bucket-monorepo to S3
         run: |
           aws s3 sync ./apps/nx-monorepo-project/.next s3://nx-bucket-monorepo --delete
         env:
@@ -53,9 +53,18 @@ jobs:
           AWS_REGION: 'us-east-2'
 
       # Upload app2 to S3 bucket
-      - name: Deploy app2 to S3
+      - name: Deploy app1 to S3
         run: |
           aws s3 sync ./app1/.next s3://nx-app1-next --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-east-2'
+
+          # Upload app2 to S3 bucket
+      - name: Deploy app2 to S3
+        run: |
+          aws s3 sync ./app2/.next s3://nx-app2-next --delete
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
