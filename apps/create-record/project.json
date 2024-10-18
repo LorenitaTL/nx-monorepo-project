@@ -1,0 +1,9 @@
+{
+  "name": "create-record",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/create-record",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project create-record --web",
+  "targets": {}
+}
