@@ -23,3 +23,22 @@ jobs:
 
       - name: Build Docker image for app
         run: docker build --build-arg app_name=${{ matrix.app }} -t ${{ matrix.app }}-image .
+
+      - name: Log in to Amazon ECR
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 692859919694.dkr.ecr.us-east-2.amazonaws.com
+
+      # - name: Push Docker image to ECR
+      #   run: |
+      #     docker tag my-${{ matrix.app }}-image <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/my-${{ matrix.app }}-repo:latest
+      #     docker push <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/my-${{ matrix.app }}-repo:latest
+
+      # - name: Deploy to App Runner
+      #   run: |
+      #     aws apprunner create-service --service-name my-${{ matrix.app }}-service \
+      #     --source-configuration ImageRepository:ImageIdentifier=<your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/my-${{ matrix.app }}-repo:latest,ImageRepositoryType=ECR || \
+      #     aws apprunner update-service --service-arn $(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='my-${{ matrix.app }}-service'].ServiceArn" --output text) \
+      #     --source-configuration ImageRepository:ImageIdentifier=<your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/my-${{ matrix.app }}-repo:latest
