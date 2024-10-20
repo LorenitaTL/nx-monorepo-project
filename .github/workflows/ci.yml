@@ -1,28 +1,38 @@
-name: CI
+name: Build and Deploy Apps to App Runner
 
 on:
   push:
     branches:
       - main
-
-permissions:
-  actions: read
-  contents: read
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: 'Apps to build and deploy (comma separated)'
+        required: true
+        default: 'nx-monorepo-project,create-record,update-record,records-list'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        app:
-          - nx-monorepo-project
-          - create-record
-          - update-record
-          - records-list
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Convertimos la lista de aplicaciones separada por comas en una matriz
+      - name: Convert comma separated apps to JSON array
+        id: apps-array
+        run: |
+          apps=$(echo "${{ github.event.inputs.apps }}" | sed 's/,/","/g')
+          echo "::set-output name=matrix_apps::[\"$apps\"]"
+
+  matrix-job:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: ${{ fromJson(needs.build-and-deploy.outputs.matrix_apps) }}
+
+    steps:
       - name: Build Docker image for app
         run: docker build --build-arg app_name=${{ matrix.app }} -t ${{ matrix.app }}-image .
 
@@ -34,19 +44,14 @@ jobs:
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
 
       - name: Tag Docker image
-        # Tagueamos la imagen para cada app en el matrix
         run: |
           docker tag ${{ matrix.app }}-image:latest public.ecr.aws/u4p4s0e4/${{ matrix.app }}:latest
 
       - name: Push Docker image to ECR Public
-        # Empujamos la imagen para cada app en el matrix
         run: |
           docker push public.ecr.aws/u4p4s0e4/${{ matrix.app }}:latest
 
-      # Puedes descomentar esta parte si quieres hacer el despliegue a AWS App Runner después
-      # - name: Deploy to App Runner
+      # - name: Update App Runner Service with new image
       #   run: |
-      #     aws apprunner create-service --service-name my-${{ matrix.app }}-service \
-      #     --source-configuration ImageRepository:ImageIdentifier=public.ecr.aws/u4p4s0e4/${{ matrix.app }}:latest || \
-      #     aws apprunner update-service --service-arn $(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='my-${{ matrix.app }}-service'].ServiceArn" --output text) \
+      #     aws apprunner update-service --service-arn $(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='my-app-runner-service'].ServiceArn" --output text) \
       #     --source-configuration ImageRepository:ImageIdentifier=public.ecr.aws/u4p4s0e4/${{ matrix.app }}:latest
