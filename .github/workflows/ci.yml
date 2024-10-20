@@ -36,7 +36,7 @@ jobs:
       - name: Push Docker image to ECR
         run: |
           docker tag ${{ matrix.app }}-image ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.app }}:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/my-${{ matrix.app }}:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.app }}:latest
 
       # - name: Deploy to App Runner
       #   run: |
