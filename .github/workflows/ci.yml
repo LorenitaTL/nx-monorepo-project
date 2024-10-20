@@ -15,9 +15,10 @@ jobs:
     strategy:
       matrix:
         app:
+          - nx-monorepo-project
           - create-record
-          # - update-record
-          # - records-list
+          - update-record
+          - records-list
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
