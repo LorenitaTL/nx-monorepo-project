@@ -38,6 +38,14 @@ jobs:
           docker tag ${{ matrix.app }}-image ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.app }}:latest
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.app }}:latest
 
+      - name: Tag Docker image
+        run: |
+          docker tag create-record:latest public.ecr.aws/u4p4s0e4/create-record:latest
+
+      - name: Push Docker image to ECR Public
+        run: |
+          docker push public.ecr.aws/u4p4s0e4/create-record:latest
+
       # - name: Deploy to App Runner
       #   run: |
       #     aws apprunner create-service --service-name my-${{ matrix.app }}-service \
