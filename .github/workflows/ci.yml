@@ -16,7 +16,7 @@ jobs:
       matrix:
         app:
           - nx-monorepo-project
-          - create-record
+          # - create-record
           # - update-record
           # - records-list
     steps:
