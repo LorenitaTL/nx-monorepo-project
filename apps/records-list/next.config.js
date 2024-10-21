@@ -8,6 +8,7 @@ const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
  **/
 const nextConfig = {
   output: 'export',
+  distDir: 'output',
   nx: {
     svgr: false,
   },
