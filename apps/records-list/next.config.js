@@ -18,7 +18,7 @@ const nextConfig = {
           name: 'recordsListApp', // Nombre de la app remota
           filename: 'static/chunks/remoteEntry.js', // Nombre del archivo remoteEntry.js
           exposes: {
-            './app': './src/app', // Módulo o componente que expone la app
+            './app': './src/components/testComponents.tsx', // Módulo o componente que expone la app
           },
           extraOptions: {},
           shared: {
