@@ -1,6 +1,7 @@
 //@ts-check
 
 const { composePlugins, withNx } = require('@nx/next');
+const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -8,15 +9,36 @@ const { composePlugins, withNx } = require('@nx/next');
 const nextConfig = {
   output: 'export',
   nx: {
-    // Set this to true if you would like to use SVGR
-    // See: https://github.com/gregberge/svgr
     svgr: false,
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.plugins.push(
+        new NextFederationPlugin({
+          name: 'recordsListApp', // Nombre de la app remota
+          filename: 'static/chunks/remoteEntry.js', // Nombre del archivo remoteEntry.js
+          exposes: {
+            './app': './src/app', // Módulo o componente que expone la app
+          },
+          extraOptions: {},
+          shared: {
+            react: {
+              singleton: true,
+              requiredVersion: false,
+            },
+            'react-dom': {
+              singleton: true,
+              requiredVersion: false,
+            },
+          },
+        })
+      );
+    }
+
+    return config;
   },
 };
 
-const plugins = [
-  // Add more Next.js plugins to this list if needed.
-  withNx,
-];
+const plugins = [withNx];
 
 module.exports = composePlugins(...plugins)(nextConfig);

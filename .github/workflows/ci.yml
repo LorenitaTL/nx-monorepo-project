@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        app: [nx-monorepo-project, create-record, update-record, records-list] # Lista de apps que se pueden construir/desplegar. Puedes agregar más.
+        app: [create-record, update-record, records-list] # Lista de apps que se pueden construir/desplegar. Puedes agregar más.
 
     steps:
       - uses: actions/checkout@v4

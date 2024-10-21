@@ -1,7 +1,7 @@
 //@ts-check
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next');
+const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
@@ -9,15 +9,42 @@ const { composePlugins, withNx } = require('@nx/next');
 const nextConfig = {
   output: 'export',
   nx: {
-    // Set this to true if you would like to use SVGR
-    // See: https://github.com/gregberge/svgr
     svgr: false,
+  },
+  webpack: (config, { isServer }) => {
+    // Integrar Module Federation en el lado del cliente
+    if (!isServer) {
+      config.plugins.push(
+        new NextFederationPlugin({
+          name: 'nxMonorepoProject', // Nombre de tu app principal
+          remotes: {
+            createRecordApp:
+              'create-record@http://localhost:3001/_next/static/chunks/remoteEntry.js', // URL del microfrontend
+            updateRecordApp:
+              'update-record@http://localhost:3002/_next/static/chunks/remoteEntry.js',
+            recordsListApp:
+              'records-list@http://localhost:3003/_next/static/chunks/remoteEntry.js',
+          },
+          extraOptions: {},
+          shared: {
+            // Dependencias compartidas (react, react-dom)
+            react: {
+              singleton: true,
+              requiredVersion: false,
+            },
+            'react-dom': {
+              singleton: true,
+              requiredVersion: false,
+            },
+          },
+        })
+      );
+    }
+
+    return config;
   },
 };
 
-const plugins = [
-  // Add more Next.js plugins to this list if needed.
-  withNx,
-];
+const plugins = [withNx];
 
 module.exports = composePlugins(...plugins)(nextConfig);
