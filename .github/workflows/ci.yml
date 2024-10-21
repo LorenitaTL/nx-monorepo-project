@@ -38,7 +38,7 @@ jobs:
       # Build only the current app from the matrix
       - name: Build App
         run: |
-          npx nx run ${{matrix.app}}:build
+          nx build ${{matrix.app}} --skip-nx-cache
         env:
           NX_CLOUD_DISTRIBUTED_EXECUTION: true
 
