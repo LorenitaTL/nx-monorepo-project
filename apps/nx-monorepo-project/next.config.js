@@ -62,16 +62,7 @@ const nextConfig = {
         remotes: getRemotes(options),
         filename: 'static/chunks/remoteEntry.js',
         exposes: {},
-        shared: {
-          react: {
-            singleton: true,
-            requiredVersion: false,
-          },
-          'react-dom': {
-            singleton: true,
-            requiredVersion: false,
-          },
-        },
+        shared: {},
       })
     );
     return config;
