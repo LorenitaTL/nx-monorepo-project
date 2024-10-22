@@ -1,45 +1,41 @@
 //@ts-check
 
-const { composePlugins, withNx } = require('@nx/next');
 const { NextFederationPlugin } = require('@module-federation/nextjs-mf');
+const { composePlugins, withNx } = require('@nx/next');
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  nx: {
+    // Set this to true if you would like to to use SVGR
+    // See: https://github.com/gregberge/svgr
+    svgr: true,
+  },
   output: 'export',
   distDir: 'output',
-  nx: {
-    svgr: false,
-  },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.plugins.push(
-        new NextFederationPlugin({
-          name: 'updateRecordApp', // Nombre de la app remota
-          filename: 'static/chunks/remoteEntry.js', // Nombre del archivo remoteEntry.js
-          exposes: {
-            './app': './src/components/testComponents.tsx', // Módulo o componente que expone la app
-          },
-          extraOptions: {},
-          shared: {
-            react: {
-              singleton: true,
-              requiredVersion: false,
-            },
-            'react-dom': {
-              singleton: true,
-              requiredVersion: false,
-            },
-          },
-        })
-      );
-    }
+  images: { unoptimized: true },
+  webpack(config, options) {
+    config.plugins.push(
+      new NextFederationPlugin({
+        name: 'mf-update-record',
+        exposes: {
+          './app': './src/pages/index.tsx',
+        },
+        extraOptions: {},
+        filename: 'static/chunks/remoteEntry.js',
+        remotes: {},
+        shared: {},
+      })
+    );
 
     return config;
   },
 };
 
-const plugins = [withNx];
+const plugins = [
+  // Add more Next.js plugins to this list if needed.
+  withNx,
+];
 
 module.exports = composePlugins(...plugins)(nextConfig);
